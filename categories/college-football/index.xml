@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Posts on Paul Heires&#39; Github Site</title>
-    <link>/post/</link>
-    <description>Recent content in Posts on Paul Heires&#39; Github Site</description>
+    <title>College Football on Paul Heires&#39; Github Site</title>
+    <link>/categories/college-football/</link>
+    <description>Recent content in College Football on Paul Heires&#39; Github Site</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 27 Mar 2021 00:00:00 +0000</lastBuildDate><atom:link href="/post/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 27 Mar 2021 00:00:00 +0000</lastBuildDate><atom:link href="/categories/college-football/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>College Football Text Cleaning</title>
       <link>/2021/03/27/college-football-text-cleaning/</link>
