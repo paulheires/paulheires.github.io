@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Hugo 0.81.0" />
+
+
+<title>How do upsets in the 2021 NCAA Men&#39;s Basketball Tournament compare to the rest of March Madness History? - Paul Heires&#39; Github Site</title>
+<meta property="og:title" content="How do upsets in the 2021 NCAA Men&#39;s Basketball Tournament compare to the rest of March Madness History? - Paul Heires&#39; Github Site">
+
+
+  <link href='/favicon.ico' rel='icon' type='image/x-icon'/>
+
+
+
+  
+
+
+
+
+
+
+
+
+<link href='//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css' rel='stylesheet' type='text/css' />
+
+
+
+<link rel="stylesheet" href="/css/fonts.css" media="all">
+<link rel="stylesheet" href="/css/main.css" media="all">
+
+
+
+  </head>
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav">
+  <a href="/" class="nav-logo">
+    <img src="/images/logo.png"
+         width="50"
+         height="50"
+         alt="Logo">
+  </a>
+
+  <ul class="nav-links">
+    
+    <li><a href="/about/">About</a></li>
+    
+    <li><a href="https://github.com/paulheires">GitHub</a></li>
+    
+    <li><a href="https://twitter.com/PaulHeires">Twitter</a></li>
+    
+  </ul>
+</nav>
+
+      </header>
+
+
+<main class="content" role="main">
+
+  <article class="article">
+    
+    <span class="article-duration">16 min read</span>
+    
+
+    <h1 class="article-title">How do upsets in the 2021 NCAA Men&#39;s Basketball Tournament compare to the rest of March Madness History?</h1>
+
+    
+    <span class="article-date">2021-04-04</span>
+    
+
+    <div class="article-content">
+      
+<script src="/2021/04/04/how-do-upsets-in-the-2021-ncaa-men-s-basketball-tournament-compare-to-the-rest-of-march-madness-history/index_files/header-attrs/header-attrs.js"></script>
+
+
+<p>There seemed to have been quite a few big upsets in this year’s NCAA Men’s Basketball March Madness tournament, but they don’t call it March Madness for nothing. There usually is a decent amount of top teams going home earlier than they wanted to, anticipated to, and were projected to. So how surprised, or upset should we really be? Shouldn’t we expect this to happen? Let’s take a look.</p>
+<p>First, I’m going to run a few libraries.</p>
+<pre class="r"><code>library(tidyverse)</code></pre>
+<pre><code>## ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.0 ──</code></pre>
+<pre><code>## ✓ ggplot2 3.3.3     ✓ purrr   0.3.4
+## ✓ tibble  3.0.5     ✓ dplyr   1.0.3
+## ✓ tidyr   1.1.2     ✓ stringr 1.4.0
+## ✓ readr   1.4.0     ✓ forcats 0.5.0</code></pre>
+<pre><code>## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()</code></pre>
+<pre class="r"><code>library(cowplot)
+library(gt)</code></pre>
+<p>I’ve taken data from Sports Reference’s NCAA Tournament Match-up Finder, and put all games in which a worse seeded team has defeated a better seeded team at any point in the tournament into 6 csv files (one for each round).</p>
+<pre class="r"><code>FirstRoundUpsets &lt;- read_csv(&quot;First_Round_Upsets.csv&quot;)</code></pre>
+<pre><code>## 
+## ── Column specification ────────────────────────────────────────────────────────
+## cols(
+##   Year = col_double(),
+##   Round = col_character(),
+##   PTS = col_double(),
+##   OPTS = col_double(),
+##   Diff = col_double(),
+##   Seed = col_character(),
+##   School = col_character(),
+##   OpponentSeed = col_character(),
+##   Opponent = col_character()
+## )</code></pre>
+<pre class="r"><code>SecondRoundUpsets &lt;- read_csv(&quot;Second_Round_Upsets.csv&quot;)</code></pre>
+<pre><code>## 
+## ── Column specification ────────────────────────────────────────────────────────
+## cols(
+##   Year = col_double(),
+##   Round = col_character(),
+##   PTS = col_double(),
+##   OPTS = col_double(),
+##   Diff = col_double(),
+##   Seed = col_double(),
+##   School = col_character(),
+##   OpponentSeed = col_double(),
+##   Opponent = col_character()
+## )</code></pre>
+<pre class="r"><code>SweetSixteenUpsets &lt;- read_csv(&quot;Sweet_Sixteen_Upsets.csv&quot;)</code></pre>
+<pre><code>## 
+## ── Column specification ────────────────────────────────────────────────────────
+## cols(
+##   Year = col_double(),
+##   Round = col_character(),
+##   PTS = col_double(),
+##   OPTS = col_double(),
+##   Diff = col_double(),
+##   Seed = col_double(),
+##   School = col_character(),
+##   OpponentSeed = col_double(),
+##   Opponent = col_character()
+## )</code></pre>
+<pre class="r"><code>EliteEightUpsets &lt;- read_csv(&quot;Elite_Eight_Upsets.csv&quot;)</code></pre>
+<pre><code>## 
+## ── Column specification ────────────────────────────────────────────────────────
+## cols(
+##   Year = col_double(),
+##   Round = col_character(),
+##   PTS = col_double(),
+##   OPTS = col_double(),
+##   Diff = col_double(),
+##   Seed = col_double(),
+##   School = col_character(),
+##   OpponentSeed = col_double(),
+##   Opponent = col_character()
+## )</code></pre>
+<pre class="r"><code>FinalFourUpsets &lt;- read_csv(&quot;Final_Four_Upsets.csv&quot;)</code></pre>
+<pre><code>## 
+## ── Column specification ────────────────────────────────────────────────────────
+## cols(
+##   Year = col_double(),
+##   Round = col_character(),
+##   PTS = col_double(),
+##   OPTS = col_double(),
+##   Diff = col_double(),
+##   Seed = col_double(),
+##   School = col_character(),
+##   OpponentSeed = col_double(),
+##   Opponent = col_character()
+## )</code></pre>
+<pre class="r"><code>NationalChampionshipUpsets &lt;- read_csv(&quot;National_Championship_Upsets.csv&quot;)</code></pre>
+<pre><code>## 
+## ── Column specification ────────────────────────────────────────────────────────
+## cols(
+##   Year = col_double(),
+##   Round = col_character(),
+##   PTS = col_double(),
+##   OPTS = col_double(),
+##   Diff = col_double(),
+##   Seed = col_double(),
+##   School = col_character(),
+##   OpponentSeed = col_double(),
+##   Opponent = col_character()
+## )</code></pre>
+<p>I’m going to combine all 6 rounds into one collective dataframe.</p>
+<pre class="r"><code>AllUpsets &lt;- do.call(&quot;rbind&quot;, list(FirstRoundUpsets, SecondRoundUpsets, SweetSixteenUpsets, EliteEightUpsets, FinalFourUpsets, NationalChampionshipUpsets))</code></pre>
+<p>After we’ve got all the upsets put together into one dataframe called “AllUpsets”, let’s group them by year and see how many games come up for each tournament.</p>
+<pre class="r"><code>TotalUpsets &lt;- AllUpsets %&gt;% 
+  group_by(Year) %&gt;%
+  summarise(
+    total = n()) %&gt;%
+  arrange(desc(total))
+TotalUpsets</code></pre>
+<pre><code>## # A tibble: 36 x 2
+##     Year total
+##    &lt;dbl&gt; &lt;int&gt;
+##  1  1999    23
+##  2  2014    22
+##  3  2001    21
+##  4  2003    21
+##  5  2006    21
+##  6  1989    20
+##  7  1990    20
+##  8  2010    20
+##  9  2011    20
+## 10  2013    20
+## # … with 26 more rows</code></pre>
+<p>To see if there is any trajectory over the years I’m going to put this on a line chart.</p>
+<pre class="r"><code>ggplot() + geom_line(data=TotalUpsets, aes(x=Year, y=total)) +
+  geom_line(data=TotalUpsets, aes(x=Year, y=17.67), color = &quot;blue&quot;) +
+  geom_text(aes(x=2020, y=17, label=&quot;Average&quot;), color=&quot;blue&quot;, size=3) +
+  labs(x=&quot;Year&quot;, y=&quot;Total Technical Upsets&quot;, title=&quot;Predicting March Madness upsets is challenging&quot;, subtitle=&quot;There is pretty much no pattern for the amount of upsets that happen from year to year.&quot;, caption=&quot;Source: Sports Reference | By Paul Heires&quot;) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 16, face = &quot;bold&quot;),
+    axis.title = element_text(size = 8), 
+    plot.subtitle = element_text(size=10), 
+    panel.grid.minor = element_blank()) </code></pre>
+<p><img src="/2021/04/04/how-do-upsets-in-the-2021-ncaa-men-s-basketball-tournament-compare-to-the-rest-of-march-madness-history/index_files/figure-html/unnamed-chunk-5-1.png" width="672" />
+Wow. 2021 doesn’t even rank in the top 10. Let’s take a look at the top 5.</p>
+<p>2014 is understandable with 7 seed UConn beating 8 seed Kentucky in the National Title (The highest combined seed total ever in the National Championship) and 2006 was the year that 11 seed George Mason took it all the way to the Final Four. Of the other three tournaments however (1999, 2001, and 2003), 9 seeds went 11-1 in the first round, 10 seeds went 8-4 in the first round and all 19 of those counted as upsets in this set.</p>
+<p>Conversely, in the three tournaments at the bottom (1993, 2007, and 2015) 9 seeds are 5-7 in the first round and 10 seeds are 1-11 in the first round. Believe it or not, 9 seeds actually have a higher percentage in the first round than 8 seeds, so that isn’t really much of an upset. 10 seeds aren’t far behind with a 39.6% winning percentage at 57-87 against 7 seeds in the first round.</p>
+<p>There has to be a better way of giving bigger, less predictable upsets more value than a common 9 over 8 in the first round.</p>
+<p>Well first, I think we should set the bar a little higher for what is a real or significant upset. I’m going to say the difference of the seeds should be at least 4 for it to be considered a significant upset. That would cut out all the 9s over 8s and 10s over 7s in the first round at least.</p>
+<p>To do this, I’ll take the AllUpsets dataframe and create a new value by filtering out the upsets in which the seed differential is less than 4.</p>
+<pre class="r"><code>AllSigUpsets &lt;- AllUpsets %&gt;%
+  mutate(Seed = as.numeric(Seed), OpponentSeed = as.numeric(OpponentSeed)) %&gt;%
+  mutate(
+    SeedDifferential = (Seed - OpponentSeed)) %&gt;%
+  filter(SeedDifferential &gt;= 4)</code></pre>
+<pre class="r"><code>AllSigTotalUpsets &lt;- AllUpsets %&gt;%
+  mutate(Seed = as.numeric(Seed), OpponentSeed = as.numeric(OpponentSeed)) %&gt;%
+  mutate(
+    SeedDifferential = (Seed - OpponentSeed))</code></pre>
+<p>Now, let’s see where this year’s tournament ranks in upsets with a seed difference of 4 or more, or “Significant Upsets”, and compare that to the total amount of upsets in a Top 10 Stacked Bar Chart.</p>
+<pre class="r"><code>AllSigandTotalUpsets &lt;- AllSigTotalUpsets %&gt;% 
+  group_by(Year) %&gt;%
+  summarise(
+    AllSignificantUpsets = sum(SeedDifferential &gt;= 4),
+    TotalUpsets = n()) %&gt;%
+  top_n(10, wt=AllSignificantUpsets) %&gt;%
+  arrange(desc(AllSignificantUpsets))</code></pre>
+<pre class="r"><code>StackedBarofAllSignificantandTotalUpsets &lt;- AllSigandTotalUpsets %&gt;%
+  pivot_longer(
+    cols=ends_with(&quot;Upsets&quot;),
+    names_to=&quot;Type&quot;, 
+    values_to=&quot;Upsets&quot;)</code></pre>
+<pre class="r"><code>ggplot(StackedBarofAllSignificantandTotalUpsets, aes(x=reorder(Year, Upsets), weight=Upsets, fill=Type)) + 
+  geom_bar() + 
+  labs(x=&quot;Year&quot;, y=&quot;Upsets&quot;, title=&quot;2021 is second only to 2014 in total significant upsets&quot;, subtitle=&quot;When you narrow it down to the bigger upsets, this year rises near the top.&quot;, caption=&quot;Source: Sports Reference | By Paul Heires&quot;) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 14, face = &quot;bold&quot;),
+    axis.title = element_text(size = 8), 
+    plot.subtitle = element_text(size=10), 
+    panel.grid.minor = element_blank()) +
+  scale_fill_manual(values=c(&quot;red&quot;, &quot;grey&quot;))</code></pre>
+<p><img src="/2021/04/04/how-do-upsets-in-the-2021-ncaa-men-s-basketball-tournament-compare-to-the-rest-of-march-madness-history/index_files/figure-html/unnamed-chunk-10-1.png" width="672" />
+Well, look at that! 2021 jumps right up to the top of the list with 15. This does give us a better idea of the brackets with bigger upsets but I think I can do better.</p>
+<p>For instance, in this scenario, the infamous 15 over 2 upset in the 2012 tournament (when Lehigh beat Duke 75-70 in the first round) has the same amount of value as any of the 7 over 2 upsets in the second round of the tournament.</p>
+<p>To fix this, and to get closer to finding the real upset value of each tournament I’m going to create another variable that gives each year’s tournament an Upset Value. Starting with the smaller upsets, I’ll give any upset with a seed differential of 4, 1. Followed by 2 for every upset with a seed differential of 5, 3 for 6, 4 for 7, and so on and so forth until UMBC over Virginia in 2018 gets 12 (seed differential of 15).</p>
+<pre class="r"><code>SignificantUpsetValue &lt;- AllSigUpsets %&gt;%
+  mutate(
+    UpsetValue = (SeedDifferential - 3))</code></pre>
+<p>Now that we’ve got an Upset Value for each game, let’s group the data together by year and add up a total Upset Value for each tournament since 1985. With that, I’ll make a table displaying the year, the number of significant upsets in each tournament, the average upset value for each game in each tournament and the total upset value for each tournament. Let’s go ahead and rank the top 10 in descending order and I’ll clean it up a little bit with some styling.</p>
+<pre class="r"><code>SignificantUpsetValue %&gt;%
+  group_by(Year) %&gt;%
+  summarise(
+    SignificantUpsets = n(),
+    AverageUpsetValue = mean(UpsetValue),
+    TournamentUpsetValue = sum(UpsetValue)) %&gt;%
+  select(Year, SignificantUpsets, AverageUpsetValue, TournamentUpsetValue) %&gt;%
+  arrange(desc(TournamentUpsetValue)) %&gt;%
+  top_n(10) %&gt;% 
+  gt() %&gt;% 
+  cols_label(
+    Year = &quot;Year&quot;,
+    SignificantUpsets = &quot;Sig. Upsets&quot;,
+    AverageUpsetValue = &quot;Avg. Upset Value&quot;,
+    TournamentUpsetValue = &quot;Tourn. Upset Value&quot;) %&gt;%
+  tab_header(
+    title = &quot;There was true madness this March&quot;,
+    subtitle = &quot;2021 beats out every other year by at least 14 in Tournament Upset Value&quot;) %&gt;% 
+  tab_style(
+    style = cell_text(color = &quot;black&quot;, weight = &quot;bold&quot;, align = &quot;left&quot;),
+    locations = cells_title(&quot;title&quot;)) %&gt;% 
+  tab_style(
+    style = cell_text(color = &quot;black&quot;, align = &quot;left&quot;),
+    locations = cells_title(&quot;subtitle&quot;)) %&gt;%
+  tab_source_note(
+    source_note = &quot;By Paul Heires&quot;) %&gt;%
+  tab_source_note(
+    source_note = md(&quot;Source: Sports Reference&quot;)) %&gt;% 
+  tab_style(
+    style = cell_text(color = &quot;black&quot;, weight = &quot;bold&quot;),
+    locations = cells_body(columns = vars(Year))) %&gt;% 
+  tab_style(
+    style=list(cell_fill(color=&quot;red&quot;), 
+    cell_text(color=&quot;white&quot;)),
+    locations = cells_body(rows = Year == 2021))</code></pre>
+<pre><code>## Selecting by TournamentUpsetValue</code></pre>
+<pre><code>## Warning: The `.dots` argument of `group_by()` is deprecated as of dplyr 1.0.0.
+## This warning is displayed once every 8 hours.
+## Call `lifecycle::last_warnings()` to see where this warning was generated.</code></pre>
+<style>html {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
+}
+
+#zorgayiezs .gt_table {
+  display: table;
+  border-collapse: collapse;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#zorgayiezs .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#zorgayiezs .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#zorgayiezs .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 0;
+  padding-bottom: 4px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#zorgayiezs .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#zorgayiezs .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#zorgayiezs .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#zorgayiezs .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#zorgayiezs .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#zorgayiezs .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#zorgayiezs .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#zorgayiezs .gt_group_heading {
+  padding: 8px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#zorgayiezs .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#zorgayiezs .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#zorgayiezs .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#zorgayiezs .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#zorgayiezs .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 12px;
+}
+
+#zorgayiezs .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#zorgayiezs .gt_first_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+}
+
+#zorgayiezs .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#zorgayiezs .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#zorgayiezs .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#zorgayiezs .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#zorgayiezs .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#zorgayiezs .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding: 4px;
+}
+
+#zorgayiezs .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#zorgayiezs .gt_sourcenote {
+  font-size: 90%;
+  padding: 4px;
+}
+
+#zorgayiezs .gt_left {
+  text-align: left;
+}
+
+#zorgayiezs .gt_center {
+  text-align: center;
+}
+
+#zorgayiezs .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#zorgayiezs .gt_font_normal {
+  font-weight: normal;
+}
+
+#zorgayiezs .gt_font_bold {
+  font-weight: bold;
+}
+
+#zorgayiezs .gt_font_italic {
+  font-style: italic;
+}
+
+#zorgayiezs .gt_super {
+  font-size: 65%;
+}
+
+#zorgayiezs .gt_footnote_marks {
+  font-style: italic;
+  font-size: 65%;
+}
+</style>
+<div id="zorgayiezs" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;"><table class="gt_table">
+  <thead class="gt_header">
+    <tr>
+      <th colspan="4" class="gt_heading gt_title gt_font_normal" style="color: black; text-align: left; font-weight: bold;">There was true madness this March</th>
+    </tr>
+    <tr>
+      <th colspan="4" class="gt_heading gt_subtitle gt_font_normal gt_bottom_border" style="color: black; text-align: left;">2021 beats out every other year by at least 14 in Tournament Upset Value</th>
+    </tr>
+  </thead>
+  <thead class="gt_col_headings">
+    <tr>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1">Year</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1">Sig. Upsets</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1">Avg. Upset Value</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1">Tourn. Upset Value</th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr>
+      <td class="gt_row gt_right" style="color: white; font-weight: bold; background-color: #FF0000;">2021</td>
+      <td class="gt_row gt_center" style="background-color: #FF0000; color: white;">15</td>
+      <td class="gt_row gt_right" style="background-color: #FF0000; color: white;">4.866667</td>
+      <td class="gt_row gt_right" style="background-color: #FF0000; color: white;">73</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_right" style="color: black; font-weight: bold;">1986</td>
+      <td class="gt_row gt_center">13</td>
+      <td class="gt_row gt_right">4.538462</td>
+      <td class="gt_row gt_right">59</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_right" style="color: black; font-weight: bold;">2013</td>
+      <td class="gt_row gt_center">11</td>
+      <td class="gt_row gt_right">5.181818</td>
+      <td class="gt_row gt_right">57</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_right" style="color: black; font-weight: bold;">2014</td>
+      <td class="gt_row gt_center">15</td>
+      <td class="gt_row gt_right">3.400000</td>
+      <td class="gt_row gt_right">51</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_right" style="color: black; font-weight: bold;">2016</td>
+      <td class="gt_row gt_center">11</td>
+      <td class="gt_row gt_right">4.636364</td>
+      <td class="gt_row gt_right">51</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_right" style="color: black; font-weight: bold;">2018</td>
+      <td class="gt_row gt_center">13</td>
+      <td class="gt_row gt_right">3.923077</td>
+      <td class="gt_row gt_right">51</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_right" style="color: black; font-weight: bold;">1999</td>
+      <td class="gt_row gt_center">10</td>
+      <td class="gt_row gt_right">4.800000</td>
+      <td class="gt_row gt_right">48</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_right" style="color: black; font-weight: bold;">2006</td>
+      <td class="gt_row gt_center">12</td>
+      <td class="gt_row gt_right">4.000000</td>
+      <td class="gt_row gt_right">48</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_right" style="color: black; font-weight: bold;">1985</td>
+      <td class="gt_row gt_center">13</td>
+      <td class="gt_row gt_right">3.615385</td>
+      <td class="gt_row gt_right">47</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_right" style="color: black; font-weight: bold;">2002</td>
+      <td class="gt_row gt_center">13</td>
+      <td class="gt_row gt_right">3.615385</td>
+      <td class="gt_row gt_right">47</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_right" style="color: black; font-weight: bold;">2011</td>
+      <td class="gt_row gt_center">13</td>
+      <td class="gt_row gt_right">3.615385</td>
+      <td class="gt_row gt_right">47</td>
+    </tr>
+  </tbody>
+  <tfoot class="gt_sourcenotes">
+    <tr>
+      <td class="gt_sourcenote" colspan="4">By Paul Heires</td>
+    </tr>
+    <tr>
+      <td class="gt_sourcenote" colspan="4">Source: Sports Reference</td>
+    </tr>
+  </tfoot>
+  
+</table></div>
+<p>And there it is.</p>
+<p>You can see that this year did not have the highest Average Upset Value. 2013 had a larger average difference in seeds per upsets that had a seed differential of 4 or more. But with only 11 upsets in that category for the whole tournament, it isn’t enough in this model to be number 1.</p>
+<p>Now that we have our top 10 tournaments by Upset Value throughout the bracket, I’m curious to see the breakdown for each individual round to see if there is any difference from round to round throughout the tournament.</p>
+<p>I’m only going to do this for the first 4 rounds as there are not a whole lot of “Significant Upsets” in the Final Four and The National Championships. In addition to that, I’m just going to rank the top 5 this time instead of 10 to narrow down the better tournaments.</p>
+<p>To do this, I’ll need to group the data together by year and add up a total upset value for each tournament again, but this time I’m going to filter out each individual round first.</p>
+<pre class="r"><code>FirstRound &lt;- SignificantUpsetValue %&gt;%
+  filter(Round == &quot;First Round&quot;)</code></pre>
+<pre class="r"><code>SecondRound &lt;- SignificantUpsetValue %&gt;%
+  filter(Round == &quot;Second Round&quot;)</code></pre>
+<pre class="r"><code>SweetSixteen &lt;- SignificantUpsetValue %&gt;%
+  filter(Round == &quot;Regional Semifinal&quot;)</code></pre>
+<pre class="r"><code>EliteEight &lt;- SignificantUpsetValue %&gt;%
+  filter(Round == &quot;Regional Final&quot;)</code></pre>
+<p>Then, I’ll add up a total upset value for each round in each tournament.</p>
+<pre class="r"><code>FirstRoundUpsetValue &lt;- FirstRound %&gt;%
+  group_by(Year) %&gt;%
+  summarise(
+    SignificantUpsets = n(),
+    AverageUpsetValue = mean(UpsetValue),
+    TournamentUpsetValue = sum(UpsetValue)) %&gt;%
+  top_n(5, wt=TournamentUpsetValue)</code></pre>
+<pre class="r"><code>SecondRoundUpsetValue &lt;- SecondRound %&gt;%
+  group_by(Year) %&gt;%
+  summarise(
+    SignificantUpsets = n(),
+    AverageUpsetValue = mean(UpsetValue),
+    TournamentUpsetValue = sum(UpsetValue)) %&gt;%
+  top_n(5, wt=TournamentUpsetValue)</code></pre>
+<pre class="r"><code>SweetSixteenUpsetValue &lt;- SweetSixteen %&gt;%
+  group_by(Year) %&gt;%
+  summarise(
+    SignificantUpsets = n(),
+    AverageUpsetValue = mean(UpsetValue),
+    TournamentUpsetValue = sum(UpsetValue)) %&gt;%
+  top_n(5, wt=TournamentUpsetValue)</code></pre>
+<pre class="r"><code>EliteEightUpsetValue &lt;- EliteEight %&gt;%
+  group_by(Year) %&gt;%
+  summarise(
+    SignificantUpsets = n(),
+    AverageUpsetValue = mean(UpsetValue),
+    TournamentUpsetValue = sum(UpsetValue)) %&gt;%
+  top_n(5, wt=TournamentUpsetValue)</code></pre>
+<p>Awesome. Now we can start making them into bar charts.</p>
+<pre class="r"><code>bar1 &lt;- ggplot() + geom_bar(data=FirstRoundUpsetValue, aes(x=reorder(Year, TournamentUpsetValue), weight=TournamentUpsetValue), color = &quot;red&quot;) + 
+  coord_flip() + 
+  labs(title=&quot;First Round&quot;, subtitle = &quot;2021 is in a 4-way tie for highest \nTournament Upset Value in the First Round.&quot;,  x=&quot;Year&quot;, y=&quot;Tournament Upset Value&quot;, caption = &quot;&quot;) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 20, face = &quot;bold&quot;),
+    axis.title = element_text(size = 8), 
+    plot.subtitle = element_text(size=10), 
+    panel.grid.minor = element_blank())</code></pre>
+<pre class="r"><code>bar2 &lt;- ggplot() + geom_bar(data=SecondRoundUpsetValue, aes(x=reorder(Year, TournamentUpsetValue), weight=TournamentUpsetValue), color = &quot;red&quot;) + 
+  coord_flip() + 
+  labs(title=&quot;Second Round&quot;, subtitle = &quot;3 10-over-2 upsets in the Second Round \ngives 1999 in the top spot in this one.&quot;,  x=&quot;Year&quot;, y=&quot;Tournament Upset Value&quot;, caption = &quot;&quot;) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 20, face = &quot;bold&quot;),
+    axis.title = element_text(size = 8), 
+    plot.subtitle = element_text(size=10), 
+    panel.grid.minor = element_blank())</code></pre>
+<pre class="r"><code>bar3 &lt;- ggplot() + geom_bar(data=SweetSixteenUpsetValue, aes(x=reorder(Year, TournamentUpsetValue), weight=TournamentUpsetValue), color = &quot;red&quot;) + 
+  coord_flip() + 
+  labs(title=&quot;Sweet Sixteen&quot;, subtitle = &quot;UCLA and Oregon State&#39;s Upsets \nput 2021 at the top of the Sweet Sixteen Round.&quot;,  x=&quot;Year&quot;, y=&quot;Tournament Upset Value&quot;, caption = &quot;&quot;) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 20, face = &quot;bold&quot;),
+    axis.title = element_text(size = 8), 
+    plot.subtitle = element_text(size=9), 
+    panel.grid.minor = element_blank())</code></pre>
+<pre class="r"><code>bar4 &lt;- ggplot() + geom_bar(data=EliteEightUpsetValue, aes(x=reorder(Year, TournamentUpsetValue), weight=TournamentUpsetValue), color = &quot;red&quot;) + 
+  coord_flip() + 
+  labs(title=&quot;Elite Eight&quot;, subtitle = &quot;2011 with two big time Elite Eight upsets \n(Butler and VCU) leads the way with 10.&quot;,  x=&quot;Year&quot;, y=&quot;Tournament Upset Value&quot;, caption = &quot;Source: Sports Reference | By Paul Heires&quot;) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 20, face = &quot;bold&quot;),
+    axis.title = element_text(size = 8), 
+    plot.subtitle = element_text(size=10), 
+    panel.grid.minor = element_blank())</code></pre>
+<p>Now that I put in the titles as well as all the labels and styling, it’s time to look at the results.</p>
+<pre class="r"><code>plot_grid(bar1, bar2, bar3, bar4, ncol=2) </code></pre>
+<p><img src="/2021/04/04/how-do-upsets-in-the-2021-ncaa-men-s-basketball-tournament-compare-to-the-rest-of-march-madness-history/index_files/figure-html/unnamed-chunk-25-1.png" width="672" />
+There isn’t complete dominance, but as you can see 2021 makes the cut for the top 5 in each of the first 4 rounds of the tournament. The second highest Tournament Upset Value in 1986 makes 3 of the charts, but of the next 4 tournaments on the list (2014, 2013, 2016, and 2018) there are only 2 in the first round and 2016 makes it in at number 5 in the Elite Eight.</p>
+<p>Lastly, I want to put all 36 tournaments on a scatter plot with the total significant upsets on the x axis and the tournament upset value I made on the y axis.</p>
+<pre class="r"><code>UpsetPlot &lt;- SignificantUpsetValue %&gt;% 
+  group_by(Year) %&gt;% 
+  summarise(
+    SignificantUpsets = n(),
+    TournamentUpsetValue = sum(UpsetValue))</code></pre>
+<pre class="r"><code>ThisYear &lt;- UpsetPlot %&gt;% filter(Year == &quot;2021&quot;)</code></pre>
+<p>We’ll need this to highlight 2021.</p>
+<pre class="r"><code>ggplot() + geom_point(data=UpsetPlot, aes(x=SignificantUpsets, y=TournamentUpsetValue)) +
+  geom_point(data=ThisYear, aes(x=SignificantUpsets, y=TournamentUpsetValue), color=&quot;red&quot;) +
+  geom_smooth(data=UpsetPlot, aes(x=SignificantUpsets, y=TournamentUpsetValue), method=&quot;lm&quot;) +
+  geom_text(aes(x=14.5, y=74, label=&quot;2021&quot;), color=&quot;red&quot;, size=4) +
+  geom_text(aes(x=13, y=63, label=&quot;1986&quot;), color=&quot;black&quot;, size=3) +
+  geom_text(aes(x=14.6, y=50, label=&quot;2014&quot;), color=&quot;black&quot;, size=3) +
+  geom_text(aes(x=3.5, y=25, label=&quot;Projection&quot;), color=&quot;blue&quot;) +
+  labs(title=&quot;Some of the biggest upsets have made this a historic tournament&quot;, subtitle = &quot;2021, by this model, has the highest Tournament Upset Value of any NCAA March Madness \nTournament and is also has a bigger variance in Tournament Upset Value based off of all other seasons.&quot;,  x=&quot;Significant Upsets&quot;, y=&quot;Tournament Upset Value&quot;, caption = &quot;Source: Sports Reference | By Paul Heires&quot;) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 15, face = &quot;bold&quot;),
+    axis.title = element_text(size = 10), 
+    plot.subtitle = element_text(size=10), 
+    panel.grid.minor = element_blank())</code></pre>
+<pre><code>## `geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
+<p><img src="/2021/04/04/how-do-upsets-in-the-2021-ncaa-men-s-basketball-tournament-compare-to-the-rest-of-march-madness-history/index_files/figure-html/unnamed-chunk-28-1.png" width="672" />
+So, with this model, it is obvious the 2021 bracket has lived up to the March Madness name. But now this brings up the question - Why?</p>
+<p>Why has 2021 been so upsetting for some of those top seeds?</p>
+<p>The first chart we looked at illustrated the complete unpredictability in the majority of games in the NCAA tournament. So we could blame it on that.</p>
+<p>But let’s not forget that there were quite a few teams that had incomplete schedules, couldn’t make up games, or had weeks of nothing followed by an NBA type schedule for the next 5 weeks due to positive COVID-19 cases. If those don’t play a factor in a team’s performance throughout the season, I don’t know what does. This would also lead to tougher decisions for the tournament selection committee due to lack of games and opponents to break down, which would give a less accurate seeding to each team that made the tournament, and open the door to more upsets.</p>
+<p>That being said, there are many more ways that you could determine the severity of every upset in each tournament and how much value to give each of those upsets. So you could say that 2021 is only looked at as historic by this model. But I have a feeling that most ways of looking at this are going to result in 2021 being at least somewhat relevant in the grand scheme of March Madness.</p>
+<p>No matter what you want to blame it on, we knew the 2021 College Basketball season was a little bit different, but did anyone expect this amount of madness in the tournament?</p>
+
+    </div>
+  </article>
+
+  
+
+
+</main>
+
+      <footer class="footer">
+        <ul class="footer-links">
+          <li>
+            <a href="/index.xml" type="application/rss+xml" target="_blank">RSS feed</a>
+          </li>
+          <li>
+            <a href="https://gohugo.io/" class="footer-links-kudos">Made with <img src="/images/hugo-logo.png" alt="Img link to Hugo website" width="22" height="22"></a>
+          </li>
+        </ul>
+      </footer>
+
+    </div>
+    
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/r.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
+<script>hljs.configure({languages: []}); hljs.initHighlightingOnLoad();</script>
+
+
+
+    
+<script src="/js/math-code.js"></script>
+<script async src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+
+    
+  </body>
+</html>
+

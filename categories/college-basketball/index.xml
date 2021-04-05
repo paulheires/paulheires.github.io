@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>sports on Paul Heires&#39; Github Site</title>
-    <link>/tags/sports/</link>
-    <description>Recent content in sports on Paul Heires&#39; Github Site</description>
+    <title>College Basketball on Paul Heires&#39; Github Site</title>
+    <link>/categories/college-basketball/</link>
+    <description>Recent content in College Basketball on Paul Heires&#39; Github Site</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 04 Apr 2021 00:00:00 +0000</lastBuildDate><atom:link href="/tags/sports/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 04 Apr 2021 00:00:00 +0000</lastBuildDate><atom:link href="/categories/college-basketball/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>How do upsets in the 2021 NCAA Men&#39;s Basketball Tournament compare to the rest of March Madness History?</title>
       <link>/2021/04/04/how-do-upsets-in-the-2021-ncaa-men-s-basketball-tournament-compare-to-the-rest-of-march-madness-history/</link>
@@ -23,25 +23,6 @@
       
       <guid>/2021/04/04/how-do-upsets-in-the-2021-ncaa-men-s-basketball-tournament-compare-to-the-rest-of-march-madness-history/</guid>
       <description>There seemed to have been quite a few big upsets in this year’s NCAA Men’s Basketball March Madness tournament, but they don’t call it March Madness for nothing. There usually is a decent amount of top teams going home earlier than they wanted to, anticipated to, and were projected to. So how surprised, or upset should we really be? Shouldn’t we expect this to happen? Let’s take a look.</description>
-    </item>
-    
-    <item>
-      <title>College Football Text Cleaning</title>
-      <link>/2021/03/27/college-football-text-cleaning/</link>
-      <pubDate>Sat, 27 Mar 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/2021/03/27/college-football-text-cleaning/</guid>
-      <description>Today, Let’s take a look at the biggest College Football Blowouts in the 2019-2020 season. THe first thing I am going to need is the tidyverse and ggalt libraries.
-library(tidyverse) ## ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.0 ── ## ✓ ggplot2 3.3.3 ✓ purrr 0.3.4 ## ✓ tibble 3.0.5 ✓ dplyr 1.0.3 ## ✓ tidyr 1.1.2 ✓ stringr 1.4.0 ## ✓ readr 1.4.0 ✓ forcats 0.5.0 ## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ── ## x dplyr::filter() masks stats::filter() ## x dplyr::lag() masks stats::lag() library(ggalt) ## Registered S3 methods overwritten by &amp;#39;ggalt&amp;#39;: ## method from ## grid.</description>
-    </item>
-    
-    <item>
-      <title>Sports Data Analysis and Visualization</title>
-      <link>/about/</link>
-      <pubDate>Sat, 13 Mar 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/about/</guid>
-      <description>This is my sports data Analysis and Visualization project for Matt Waite&amp;rsquo;s SPMC 350 class in the College of Journalism and Mass Communications in the University of Nebraska-Lincoln.</description>
     </item>
     
   </channel>
