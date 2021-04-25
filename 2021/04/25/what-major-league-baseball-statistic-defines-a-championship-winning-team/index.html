@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Hugo 0.81.0" />
+
+
+<title>What Major League Baseball statistic defines a championship winning team? - Paul Heires&#39; Github Site</title>
+<meta property="og:title" content="What Major League Baseball statistic defines a championship winning team? - Paul Heires&#39; Github Site">
+
+
+  <link href='/favicon.ico' rel='icon' type='image/x-icon'/>
+
+
+
+  
+
+
+
+
+
+
+
+
+<link href='//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css' rel='stylesheet' type='text/css' />
+
+
+
+<link rel="stylesheet" href="/css/fonts.css" media="all">
+<link rel="stylesheet" href="/css/main.css" media="all">
+
+
+
+  </head>
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav">
+  <a href="/" class="nav-logo">
+    <img src="/images/logo.png"
+         width="50"
+         height="50"
+         alt="Logo">
+  </a>
+
+  <ul class="nav-links">
+    
+    <li><a href="/about/">About</a></li>
+    
+    <li><a href="https://github.com/paulheires">GitHub</a></li>
+    
+    <li><a href="https://twitter.com/PaulHeires">Twitter</a></li>
+    
+  </ul>
+</nav>
+
+      </header>
+
+
+<main class="content" role="main">
+
+  <article class="article">
+    
+    <span class="article-duration">12 min read</span>
+    
+
+    <h1 class="article-title">What Major League Baseball statistic defines a championship winning team?</h1>
+
+    
+    <span class="article-date">2021-04-25</span>
+    
+
+    <div class="article-content">
+      
+<script src="/2021/04/25/what-major-league-baseball-statistic-defines-a-championship-winning-team/index_files/header-attrs/header-attrs.js"></script>
+
+
+<p>If you’ve ever been to a major league baseball game, you know that home runs are one of the best parts of the game. They’re fun to watch, and often times the team with the most homers wins the game. The long ball doesn’t always tell the whole story though. Of the MLB champions in the last 15 seasons, only 5 have ranked in the top 8 in home runs during the regular season. The 2012 San Francisco Giants even had the least amount of dingers in the league that season with just 103.</p>
+<p>Believe it or not, home runs are not alone when it comes to correlation between big time statistics in the game and who ends up on top at the end of the season. So what stat makes a championship winning team?</p>
+<pre class="r"><code>library(tidyverse)
+library(gt)</code></pre>
+<p>I took MLB team stats from the last 15 seasons and cut it down to just the regular season team stats for the World Series Champions, and the league averages for those stats in each season.</p>
+<pre class="r"><code>FifteenSeasons &lt;- read_csv(&quot;MLB Champions.csv&quot;)</code></pre>
+<p>The first thing I’m going to do is split the World Series Champions and League Averages into two dataframes.</p>
+<pre class="r"><code>WorldSeriesChampions &lt;- FifteenSeasons %&gt;%
+  filter(Team != &quot;LgAvg&quot;)</code></pre>
+<pre class="r"><code>LeagueAverages &lt;- FifteenSeasons %&gt;%
+  filter(Team == &quot;LgAvg&quot;)</code></pre>
+<p>Now that I’ve got that done, let’s take a look at the differences between those 2 groups of data.</p>
+<p>First, let’s do pitching stats. For this, I want to take the 3 most meaningful pitching stats for both the title winners and the averages. Right off the bat (literally), I think ERA (Earned Run Average) is definitely important. This is pretty much the number of runs the pitcher is responsible for giving up every 9 innings (one full game). The second stat I want to see is a little less big picture but I think is equally important: WHIP. That stands for Walks(W) plus Hits(H) per Innings Pitched (IP). Pretty much the majority of the baserunners allowed in each inning of work (not counting errors). The last one I picked is SO/BB or SO/W which is Strikeout to Walk ratio.</p>
+<p>These three stats I think give a good overall pitching evaluation. Let’s plug them into a line chart and compare them to the league averages for each season.</p>
+<pre class="r"><code>ggplot() + 
+  geom_line(data=WorldSeriesChampions, aes(x=Year, y=ERA), color=&quot;green&quot;) + 
+  geom_line(data=WorldSeriesChampions, aes(x=Year, y=WHIP), color=&quot;blue&quot;) + 
+  geom_line(data=WorldSeriesChampions, aes(x=Year, y=`SO/W`), color=&quot;red&quot;) + 
+  geom_line(data=LeagueAverages, aes(x=Year, y=ERA), color=&quot;darkgreen&quot;) + 
+  geom_line(data=LeagueAverages, aes(x=Year, y=WHIP), color=&quot;darkblue&quot;) + 
+  geom_line(data=LeagueAverages, aes(x=Year, y=`SO/W`), color=&quot;darkred&quot;) +
+  geom_text(aes(x=2014, y=4.2, label=&quot;ERA&quot;), size = 8, fontface = 2, color=&quot;green&quot;) +
+  geom_text(aes(x=2018, y=1.6, label=&quot;WHIP&quot;), size = 8, fontface = 2, color=&quot;blue&quot;) +
+  geom_text(aes(x=2009, y=2.6, label=&quot;SO/W&quot;), size = 8, fontface = 2, color=&quot;red&quot;) +
+  geom_text(aes(x=2008.4, y=4.5, label=&quot;Average&quot;), size = 3, color=&quot;darkgreen&quot;) +
+  geom_text(aes(x=2007, y=3.7, label=&quot;MLB Champions&quot;), size = 3, color=&quot;green&quot;) +
+  geom_text(aes(x=2014, y=1.4, label=&quot;Average&quot;), size = 3, color=&quot;darkblue&quot;) +
+  geom_text(aes(x=2007, y=1.2, label=&quot;MLB Champions&quot;), size = 3, color=&quot;blue&quot;) +
+  geom_text(aes(x=2018, y=2.5, label=&quot;Average&quot;), size = 3, color=&quot;darkred&quot;) +
+  geom_text(aes(x=2012.5, y=3, label=&quot;MLB Champions&quot;), size = 3, color=&quot;red&quot;) +
+  labs(x=&quot;Year&quot;, y=&quot;&quot;, title=&quot;Is Pitching the Key to Victory?&quot;, subtitle=&quot;Keeping the ERA and WHIP well below the league average is common among World Series Champions.&quot;, caption=&quot;Source: Sports Reference | By Paul Heires&quot;) + 
+  theme_minimal() + 
+  theme(
+    plot.title = element_text(size = 16, face = &quot;bold&quot;),
+    axis.title = element_text(size = 8), 
+    plot.subtitle = element_text(size=9), 
+    panel.grid.minor = element_blank())</code></pre>
+<p><img src="/2021/04/25/what-major-league-baseball-statistic-defines-a-championship-winning-team/index_files/figure-html/unnamed-chunk-5-1.png" width="672" />
+For ERA and WHIP, the lower number the better, and the opposite is true for strikeout to walk ratio. For the most part MLB Champions in all three pitching categories were better than average. That’s expected, after all they had to be doing something right to win that many games.</p>
+<p>But what we should really look at in this graph is the separation between the two lines for each stat. At first glance, WHIP looks to be the weakest in separation from the pack, but there are a lot of the things to take into consideration.</p>
+<p>For instance, the range between the top and bottom of the WHIP statistic is typically less than 0.5 vs the range of ERA can get up to 2.0 in some seasons. We’ll get in to that more later, but for now I want to look at batting stats.</p>
+<p>First things first, the best way to win games is to score runs. So the first stat I’ll do is R/G or Runs per Game. Let’s accompany that with perhaps the most widely used batting stat of them all: Batting Average. This is pretty much the number of successful hits per at bat or batting attempt. And just for fun I’ll make the third stat home runs.</p>
+<p>If you don’t know what those are you probably won’t understand anything else the rest of the way.</p>
+<p>Now, unlike the pitching variables, these three stats are on completely different scales. home runs are usually in the triple digits and the other 2 average under 10. To get past this, I’m just going to create a bubble chart with batting average on the x axis, runs per game on the y axis, and make the size of the points equal to the home run total. I’ll go ahead and throw the averages in there as well to give us an idea of how every team stacks up.</p>
+<p>Let’s also get the averages among the World Series Champions in runs per game and batting average to give us a benchmark. We’ll do the same for all the league averages creating a 15-season-wide average for both runs per game and batting average.</p>
+<pre class="r"><code>WorldSeriesChampions %&gt;% 
+  ungroup() %&gt;% 
+  summarise(
+    WSBAAvg = mean(BA), 
+    WSRGAvg = mean(R/G))</code></pre>
+<pre><code>## # A tibble: 1 x 2
+##   WSBAAvg WSRGAvg
+##     &lt;dbl&gt;   &lt;dbl&gt;
+## 1   0.268    5.01</code></pre>
+<pre class="r"><code>LeagueAverages %&gt;% 
+  ungroup() %&gt;% 
+  summarise(
+    LABAAvg = mean(BA), 
+    LARGAvg = mean(R/G))</code></pre>
+<pre><code>## # A tibble: 1 x 2
+##   LABAAvg LARGAvg
+##     &lt;dbl&gt;   &lt;dbl&gt;
+## 1   0.256    4.49</code></pre>
+<p>With those numbers, I’ll put the average lines in and add some labels into the bubble chart.</p>
+<pre class="r"><code>ggplot() + 
+  geom_point(
+    data=LeagueAverages, aes(x=BA, y=R/G, size=HR), color=&quot;grey&quot;, alpha=.5) + 
+  geom_point(
+    data=WorldSeriesChampions, aes(x=BA, y=R/G, size=HR), color=&quot;red&quot;) +
+  geom_vline(xintercept = 0.2675333, color = &quot;blue&quot;) + 
+  geom_hline(yintercept = 5.012819, color = &quot;blue&quot;) +
+  geom_vline(xintercept = 0.2562, color = &quot;grey&quot;) + 
+  geom_hline(yintercept = 4.494897, color = &quot;grey&quot;) +
+  geom_text(aes(x=0.256, y=5.7, label=&quot;2020 Dodgers&quot;), size = 2.5, color=&quot;#005A9C&quot;) +
+  geom_text(aes(x=0.2615, y=5.39, label=&quot;2019 Nationals&quot;), size = 2.5, color=&quot;#AB0003&quot;) +
+  geom_text(aes(x=0.2578, y=4.1, label=&quot;2014 Giants&quot;), size = 2.5, color=&quot;#FD5A1E&quot;) +
+  geom_text(aes(x=0.2764, y=4.7, label=&quot;2011 Cardinals&quot;), size = 2.5, color=&quot;#C41E3A&quot;) +
+  geom_text(aes(x=0.2598, y=4.3, label=&quot;2010 Giants&quot;), size = 2.5, color=&quot;#FD5A1E&quot;) +
+  geom_text(aes(x=0.282, y=5.78, label=&quot;2009 Yankees&quot;), size = 2.5, color=&quot;#0C2340&quot;) +
+  geom_text(aes(x=0.245, y=4.7, label=&quot;2020&quot;), size = 2.5, color=&quot;black&quot;) +
+  geom_text(aes(x=0.2486, y=5.08, label=&quot;MLB Champions Average&quot;), size = 3, color=&quot;blue&quot;) +
+  geom_text(aes(x=0.2724, y=4.06, label=&quot;MLB Champions Average&quot;), size = 2.5, color=&quot;blue&quot;) +
+  geom_text(aes(x=0.27, y=5.7, label=&quot;World Series Champions&quot;), size = 6, fontface = 2, color=&quot;red&quot;) +
+  geom_text(aes(x=0.249, y=4.34, label=&quot;League Averages&quot;), size = 4, color=&quot;darkgrey&quot;) +
+  geom_text(aes(x=0.28, y=4.54, label=&quot;League Average&quot;), size = 2.5, color=&quot;black&quot;) +
+  labs(x=&quot;Batting Average&quot;, y=&quot;Runs Scored Per Game&quot;, title=&quot;15 Seasons of Batting Efficiency&quot;, subtitle=&quot;The majority of the World Series Champions are \nat the top of the 3 statistics but there are still some below the league average.&quot;, caption=&quot;Source: Sports Reference | By Paul Heires&quot;) + 
+  theme_minimal() + 
+  theme(
+    plot.title = element_text(size = 16, face = &quot;bold&quot;),
+    axis.title = element_text(size = 9), 
+    plot.subtitle = element_text(size=10), 
+    panel.grid.minor = element_blank())</code></pre>
+<p><img src="/2021/04/25/what-major-league-baseball-statistic-defines-a-championship-winning-team/index_files/figure-html/unnamed-chunk-8-1.png" width="672" />
+With the World Series Champions in red and the League Averages in gray, you can see that for the most part the champions are better overall, but there are still a few outliers that are actually below the average. The 2014 Giants were even below average in both runs per game and home runs and they were only 0.004 ahead of the league’s batting average. It’s safe to say that they hung their hats on pitching.</p>
+<p>We’re getting a better idea of which stat helps a championship campaign, but it’s still hard to compare some of these stats when the difference in average variance is unique to each one. There is a more universal way to see how each World Series Champion stacks up to the rest of the league for each category in the season that they won and that would be rankings.</p>
+<p>It isn’t the most accurate, but it does put all the stats in same ballpark which will make it easier to compare. What I’m going to do is take all the champions, take their ranking in each of those 6 stats in that season, then find the average ranking that the 15 teams ranked collectively for each stat and find out which stat has the highest average ranking (lowest number).</p>
+<p>To do this, I’ll need to arrange my data to make it longer.</p>
+<pre class="r"><code>WorldSeriesChampionRankings &lt;- WorldSeriesChampions %&gt;% 
+  rename(`Runs per Game` = `R/GRank`, `Batting Average` = BARank, `Earned Run Average` = ERARank, `Walks plus Hits per Innings Pitched` = WHIPRank, `Strikeout to Walk Ratio` = `SO/WRank`, `Home Runs` = HRRank) %&gt;%
+  pivot_longer(cols = c(`Runs per Game`, `Batting Average`, `Earned Run Average`, `Walks plus Hits per Innings Pitched`, `Strikeout to Walk Ratio`, `Home Runs`), names_to = &quot;RankType&quot;, values_to = &quot;Rank&quot;) %&gt;%
+  group_by(RankType) %&gt;%
+  summarise(
+    AverageRanking = mean(Rank))</code></pre>
+<p>Now that the data is lined up correctly, I’m going to make a table with the average rank for each statistic. Let’s see what we get.</p>
+<pre class="r"><code>WorldSeriesChampionRankings %&gt;%
+  select(RankType, AverageRanking) %&gt;%
+  arrange((AverageRanking)) %&gt;%
+  gt() %&gt;% 
+  cols_label(
+    RankType = &quot;Stat&quot;,
+    AverageRanking = &quot;Average Ranking&quot;) %&gt;%
+  tab_header(
+    title = &quot;How do the Champions Stack Up?&quot;,
+    subtitle = &quot;Runs per game and batting average are the top two, proving that you need offensive efficiency to win championships.&quot;) %&gt;% 
+  tab_style(
+    style = cell_text(color = &quot;black&quot;, weight = &quot;bold&quot;, align = &quot;left&quot;),
+    locations = cells_title(&quot;title&quot;)) %&gt;% 
+  tab_style(
+    style = cell_text(color = &quot;black&quot;, align = &quot;left&quot;),
+    locations = cells_title(&quot;subtitle&quot;)) %&gt;%
+  tab_source_note(
+    source_note = &quot;By Paul Heires&quot;) %&gt;%
+  tab_source_note(
+    source_note = md(&quot;Source: Sports Reference&quot;)) %&gt;% 
+  tab_style(
+    style = cell_text(color = &quot;black&quot;, weight = &quot;bold&quot;),
+    locations = cells_body(columns = vars(RankType))) %&gt;%
+  tab_style(
+    style = list(
+      cell_fill(color = &quot;green&quot;),
+      cell_text(weight = &quot;bold&quot;)),
+    locations = cells_body(
+      columns = vars(RankType, AverageRanking),
+      rows = AverageRanking &lt;= 7))</code></pre>
+<style>html {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
+}
+
+#pwsgmwmmhl .gt_table {
+  display: table;
+  border-collapse: collapse;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#pwsgmwmmhl .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#pwsgmwmmhl .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#pwsgmwmmhl .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 0;
+  padding-bottom: 4px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#pwsgmwmmhl .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#pwsgmwmmhl .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#pwsgmwmmhl .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#pwsgmwmmhl .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#pwsgmwmmhl .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#pwsgmwmmhl .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#pwsgmwmmhl .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#pwsgmwmmhl .gt_group_heading {
+  padding: 8px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#pwsgmwmmhl .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#pwsgmwmmhl .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#pwsgmwmmhl .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#pwsgmwmmhl .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#pwsgmwmmhl .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 12px;
+}
+
+#pwsgmwmmhl .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#pwsgmwmmhl .gt_first_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+}
+
+#pwsgmwmmhl .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#pwsgmwmmhl .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#pwsgmwmmhl .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#pwsgmwmmhl .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#pwsgmwmmhl .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#pwsgmwmmhl .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding: 4px;
+}
+
+#pwsgmwmmhl .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#pwsgmwmmhl .gt_sourcenote {
+  font-size: 90%;
+  padding: 4px;
+}
+
+#pwsgmwmmhl .gt_left {
+  text-align: left;
+}
+
+#pwsgmwmmhl .gt_center {
+  text-align: center;
+}
+
+#pwsgmwmmhl .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#pwsgmwmmhl .gt_font_normal {
+  font-weight: normal;
+}
+
+#pwsgmwmmhl .gt_font_bold {
+  font-weight: bold;
+}
+
+#pwsgmwmmhl .gt_font_italic {
+  font-style: italic;
+}
+
+#pwsgmwmmhl .gt_super {
+  font-size: 65%;
+}
+
+#pwsgmwmmhl .gt_footnote_marks {
+  font-style: italic;
+  font-size: 65%;
+}
+</style>
+<div id="pwsgmwmmhl" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;"><table class="gt_table">
+  <thead class="gt_header">
+    <tr>
+      <th colspan="2" class="gt_heading gt_title gt_font_normal" style="color: black; text-align: left; font-weight: bold;">How do the Champions Stack Up?</th>
+    </tr>
+    <tr>
+      <th colspan="2" class="gt_heading gt_subtitle gt_font_normal gt_bottom_border" style="color: black; text-align: left;">Runs per game and batting average are the top two, proving that you need offensive efficiency to win championships.</th>
+    </tr>
+  </thead>
+  <thead class="gt_col_headings">
+    <tr>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1">Stat</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1">Average Ranking</th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr>
+      <td class="gt_row gt_left" style="color: black; font-weight: bold; background-color: #00FF00;">Runs per Game</td>
+      <td class="gt_row gt_right" style="background-color: #00FF00; font-weight: bold;">6.266667</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="color: black; font-weight: bold;">Batting Average</td>
+      <td class="gt_row gt_right">8.000000</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="color: black; font-weight: bold;">Earned Run Average</td>
+      <td class="gt_row gt_right">8.266667</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="color: black; font-weight: bold;">Walks plus Hits per Innings Pitched</td>
+      <td class="gt_row gt_right">8.266667</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="color: black; font-weight: bold;">Strikeout to Walk Ratio</td>
+      <td class="gt_row gt_right">10.266667</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="color: black; font-weight: bold;">Home Runs</td>
+      <td class="gt_row gt_right">11.466667</td>
+    </tr>
+  </tbody>
+  <tfoot class="gt_sourcenotes">
+    <tr>
+      <td class="gt_sourcenote" colspan="2">By Paul Heires</td>
+    </tr>
+    <tr>
+      <td class="gt_sourcenote" colspan="2">Source: Sports Reference</td>
+    </tr>
+  </tfoot>
+  
+</table></div>
+<p>Well look at that, the teams that win the World Series are more likely to score a lot and hit the ball well. This pretty much tells us that even if an MLB team finishes the season with the most home runs in the league, it doesn’t really matter because the World Series Champions average around 11th in the league in home runs.</p>
+<p>Looking at this, you can tell that this is a very refined version of a much bigger idea. Obviously, there are way more than 6 stats in baseball and you can go further back in league history, but I think this gives us an upfront look at the most important stats in baseball, and how the best teams faired at them.</p>
+<p>Strikeouts and home runs may be pivotal parts of the game, but in the grand scheme of things, it’s safe to say that in recent years, an offense’s ability to score runs and a pitcher’s ability to keep runs off the board play a much more important role in becoming a championship team.</p>
+
+    </div>
+  </article>
+
+  
+
+
+</main>
+
+      <footer class="footer">
+        <ul class="footer-links">
+          <li>
+            <a href="/index.xml" type="application/rss+xml" target="_blank">RSS feed</a>
+          </li>
+          <li>
+            <a href="https://gohugo.io/" class="footer-links-kudos">Made with <img src="/images/hugo-logo.png" alt="Img link to Hugo website" width="22" height="22"></a>
+          </li>
+        </ul>
+      </footer>
+
+    </div>
+    
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/r.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
+<script>hljs.configure({languages: []}); hljs.initHighlightingOnLoad();</script>
+
+
+
+    
+<script src="/js/math-code.js"></script>
+<script async src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+
+    
+  </body>
+</html>
+
