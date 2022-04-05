@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Hugo 0.81.0" />
+
+
+<title>Why the NCAA Tournament is called March Madness - Paul Heires&#39; Github Site</title>
+<meta property="og:title" content="Why the NCAA Tournament is called March Madness - Paul Heires&#39; Github Site">
+
+
+  <link href='/favicon.ico' rel='icon' type='image/x-icon'/>
+
+
+
+  
+
+
+
+
+
+
+
+
+<link href='//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css' rel='stylesheet' type='text/css' />
+
+
+
+<link rel="stylesheet" href="/css/fonts.css" media="all">
+<link rel="stylesheet" href="/css/main.css" media="all">
+
+
+
+  </head>
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav">
+  <a href="/" class="nav-logo">
+    <img src="/images/logo.png"
+         width="50"
+         height="50"
+         alt="Logo">
+  </a>
+
+  <ul class="nav-links">
+    
+    <li><a href="/about/">About</a></li>
+    
+    <li><a href="https://github.com/paulheires">GitHub</a></li>
+    
+    <li><a href="https://twitter.com/PaulHeires">Twitter</a></li>
+    
+  </ul>
+</nav>
+
+      </header>
+
+
+<main class="content" role="main">
+
+  <article class="article">
+    
+    <span class="article-duration">5 min read</span>
+    
+
+    <h1 class="article-title">Why the NCAA Tournament is called March Madness</h1>
+
+    
+    <span class="article-date">2022-03-31</span>
+    
+
+    <div class="article-content">
+      
+
+
+<p>The answer to Why do they call it March Madness seems pretty simple, the tournament takes place in March and there are 68 teams in the tournament, with one champion. The odds of being happy are just over one percent. But why don’t the better teams win every game or even most of the games? Give a team like Saint Peter’s a chance and the will to win and it doesn’t seem nearly as unrealistic. Every year, we see an average of 12 to 20 upsets in the tournament. Very rarely does the favorite win more than 80% of the games. Well that is pretty much what my Logistic Regression model predicted. On top of that, in the few upsets my model did predict, it was way off.
+Let me break down my thinking before the tournament.
+Some of the measures I think predict success are offensive rebounds or second chance points, turnover margin, and block percentage. Confidence makes teams play better and more together and just the right amount of winning can be just the spark a team needs to win a big game. Second chance points are also a huge part of the game. Simply put, the more chances you have to score on any given possession, the higher chance you will score on that possession. The more possessions you score on, the more points you score and the more points you score, the higher chance your team will win. Conversely, turnovers indicate possessions that you don’t score, and the less possessions you score on, the less points you have, the less points you have, the less chance your team has of winning. Blocks can also change a game, not only by that one shot, but now the opponents have to actively strategize against that occurrence to keep from repeating later in the game. If blocked shots start piling up, the opposition’s offensive attack is more or less limited. I also used Kenpom ratings because it strictly measures points scored and allowed per 100 possessions with a few adjustments mixed in.
+I chose Logistic Regression as my machine learning tool for multiple reasons. First, the idea of drawing a line in the sand where numbers differentiate just makes the most sense statistically. Now I know they don’t call it March Madness for nothing, but going by the numbers seemed like the safest bet. It wasn’t. I have nothing against the other three models but I just don’t see how randomly correlated decision trees can be more accurate than a best fit line. XGBoost would take forever to work a recipe out, and support vector machines seem a little complicated for what I’m trying to do.
+Long story short, going by the numbers can be thrown out the window when it comes to the NCAA Tournament and with over 9,200 quadrillion possible outcomes for the tournament, it’s no wonder no one has ever predicted the tournament correctly.
+A big reason for this is because there are an average of 12 to 20 upsets in each tournament, but we don’t know how many there will be in that range, what round they will occur, or more importantly, which teams will be upset.</p>
+<pre class="r"><code>library(tidyverse)
+library(gt)</code></pre>
+<p>Here’s an idea of what my model predicted compared to what actually happened.</p>
+<pre class="r"><code>FirstRoundUpsets &lt;- read_csv(&quot;First_Round_Upsets.csv&quot;)
+SecondRoundUpsets &lt;- read_csv(&quot;Second_Round_Upsets.csv&quot;)
+SweetSixteenUpsets &lt;- read_csv(&quot;Sweet_Sixteen_Upsets.csv&quot;)
+EliteEightUpsets &lt;- read_csv(&quot;Elite_Eight_Upsets.csv&quot;)
+FinalFourUpsets &lt;- read_csv(&quot;Final_Four_Upsets.csv&quot;)
+NationalChampionshipUpsets &lt;- read_csv(&quot;National_Championship_Upsets.csv&quot;)</code></pre>
+<pre class="r"><code>AllUpsets &lt;- do.call(&quot;rbind&quot;, list(FirstRoundUpsets, SecondRoundUpsets, SweetSixteenUpsets, EliteEightUpsets, FinalFourUpsets, NationalChampionshipUpsets))</code></pre>
+<pre class="r"><code>All2022Upsets &lt;- AllUpsets %&gt;% 
+  filter(Year == &quot;2022&quot;)</code></pre>
+<pre class="r"><code>LogisticRegressionUpsetPredictions &lt;- read_csv(&quot;Logistic_Regression_Upset_Predictions.csv&quot;)</code></pre>
+<pre><code>## Rows: 8 Columns: 6
+## ── Column specification ────────────────────────────────────────────────────────
+## Delimiter: &quot;,&quot;
+## chr (3): Round, School, Opponent
+## dbl (3): Year, Seed, OpponentSeed
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<pre class="r"><code>TotalUpsetsbyRound &lt;- All2022Upsets %&gt;% 
+  group_by(Round) %&gt;%
+  summarise(
+    total = n()) %&gt;%
+  arrange(desc(total))
+TotalUpsetsbyRound</code></pre>
+<pre><code>## # A tibble: 4 × 2
+##   Round              total
+##   &lt;chr&gt;              &lt;int&gt;
+## 1 First Round           10
+## 2 Second Round           6
+## 3 Regional Semifinal     4
+## 4 National Semifinal     1</code></pre>
+<pre class="r"><code>LogisticRegressionUpsetPredictionsbyRound &lt;- LogisticRegressionUpsetPredictions %&gt;% 
+  group_by(Round) %&gt;%
+  summarise(
+    total = n()) %&gt;%
+  arrange(desc(total))
+LogisticRegressionUpsetPredictionsbyRound</code></pre>
+<pre><code>## # A tibble: 4 × 2
+##   Round              total
+##   &lt;chr&gt;              &lt;int&gt;
+## 1 First Round            3
+## 2 Second Round           3
+## 3 Regional Final         1
+## 4 Regional Semifinal     1</code></pre>
+<pre class="r"><code>ggplot() + 
+  geom_line(data=TotalUpsetsbyRound, aes(x=Round, y=total), color=&quot;green&quot;) + 
+  geom_line(data=LogisticRegressionUpsetPredictionsbyRound, aes(x=Round, y=total), color=&quot;darkred&quot;) +
+  geom_text(aes(x=2, y=4.2, label=&quot;ERA&quot;), size = 8, fontface = 2, color=&quot;green&quot;) +
+  geom_text(aes(x=4, y=1.6, label=&quot;WHIP&quot;), size = 8, fontface = 2, color=&quot;blue&quot;) +
+  geom_text(aes(x=1, y=2.6, label=&quot;SO/W&quot;), size = 8, fontface = 2, color=&quot;red&quot;) +
+  geom_text(aes(x=4.2, y=4.5, label=&quot;Average&quot;), size = 3, color=&quot;darkgreen&quot;) +
+  geom_text(aes(x=3.5, y=3.7, label=&quot;MLB Champions&quot;), size = 3, color=&quot;green&quot;) +
+  geom_text(aes(x=4, y=2.5, label=&quot;Average&quot;), size = 3, color=&quot;darkred&quot;) +
+  geom_text(aes(x=2, y=3, label=&quot;MLB Champions&quot;), size = 3, color=&quot;red&quot;) +
+  labs(x=&quot;Round&quot;, y=&quot;Total Upsets&quot;, title=&quot;Upset are Unavoidable&quot;, subtitle=&quot;Keeping the ERA and WHIP well below the league average is common among World Series Champions.&quot;, caption=&quot;Source: ESPN | By Paul Heires&quot;) + 
+  theme_minimal() + 
+  theme(
+    plot.title = element_text(size = 16, face = &quot;bold&quot;),
+    axis.title = element_text(size = 8), 
+    plot.subtitle = element_text(size=9), 
+    panel.grid.minor = element_blank())</code></pre>
+<pre><code>## geom_path: Each group consists of only one observation. Do you need to adjust
+## the group aesthetic?
+## geom_path: Each group consists of only one observation. Do you need to adjust
+## the group aesthetic?</code></pre>
+<p><img src="/2022/03/31/why-the-ncaa-tournament-is-called-march-madness/index_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+
+    </div>
+  </article>
+
+  
+
+
+</main>
+
+      <footer class="footer">
+        <ul class="footer-links">
+          <li>
+            <a href="/index.xml" type="application/rss+xml" target="_blank">RSS feed</a>
+          </li>
+          <li>
+            <a href="https://gohugo.io/" class="footer-links-kudos">Made with <img src="/images/hugo-logo.png" alt="Img link to Hugo website" width="22" height="22"></a>
+          </li>
+        </ul>
+      </footer>
+
+    </div>
+    
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/r.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
+<script>hljs.configure({languages: []}); hljs.initHighlightingOnLoad();</script>
+
+
+
+    
+
+    
+  </body>
+</html>
+
